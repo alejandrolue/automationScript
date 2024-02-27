@@ -27,6 +27,13 @@ $(document).ready(function () {
 
         // Create a new dropdown element
         const dropdown = document.createElement('select');
+        dropdown.id = "selectDropdown"
+
+
+        const titleOption = document.createElement('option');
+        titleOption.textContent = 'Select an option';
+        titleOption.disabled = true;
+        dropdown.appendChild(titleOption);
 
         // Create and append option elements to the dropdown
         data.forEach(option => {
@@ -37,9 +44,16 @@ $(document).ready(function () {
             dropdown.appendChild(optionElement);
         });
 
+        // Set the default value for the dropdown
+        dropdown.value = ''; // No default value
+
         // Insert the dropdown after the parent div
         parentDiv1.insertAdjacentElement('afterend', dropdown);
 
+        document.getElementById("selectDropdown").onchange = function () {
+            onSelect(data);
+            $("#selectDropdown").on('blur', (e) => (e.target.value = 'Select'));
+        }
 
         // Get a reference to the parent element
         const parentDiv = document.querySelector('.card--2wTIL');
@@ -89,6 +103,8 @@ $(document).ready(function () {
             // Log the selected value
             console.log(selectedValue);
         }
+
+
     })
 })
 
@@ -109,4 +125,43 @@ function waitForElm(selector) {
             childList: true, subtree: true
         });
     });
+}
+
+function onSelect(data) {
+    const dropdown = document.querySelector('select');
+
+
+    const selectedIndex = dropdown.selectedIndex - 1;
+    console.log(selectedIndex);
+
+
+
+    // Example usage: Set value of the Material-UI input field
+    simulateReactInput('#Title', data[selectedIndex][0]);
+
+
+    // Get the Quill editor container element
+    const quillEditor = document.querySelector('.ql-editor');
+
+    // Set the new value
+    const newValue = data[selectedIndex][1];
+    quillEditor.textContent = newValue;
+}
+
+// Function to simulate typing into an input field managed by React
+function simulateReactInput(selector, value) {
+    const input = document.querySelector(selector);
+    if (!input) return;
+
+    // Set the value
+    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+    nativeInputValueSetter.call(input, value);
+
+    // Dispatch a 'input' event
+    const inputEvent = new Event('input', { bubbles: true });
+    input.dispatchEvent(inputEvent);
+
+    // Dispatch a 'change' event for React components
+    const changeEvent = new Event('change', { bubbles: true });
+    input.dispatchEvent(changeEvent);
 }
