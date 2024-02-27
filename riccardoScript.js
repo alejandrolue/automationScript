@@ -18,7 +18,6 @@ $(document).ready(function () {
         let data = [];
         if (state) {
             data = [...JSON.parse(state)];
-            console.log(localStorage.getItem('storedData'));
         } else {
             console.log("empty")
         }
@@ -144,8 +143,7 @@ function onSelect(data) {
     const quillEditor = document.querySelector('.ql-editor');
 
     // Set the new value
-    const newValue = data[selectedIndex][1];
-    quillEditor.textContent = newValue;
+    quillEditor.textContent = data[selectedIndex][1];
 }
 
 // Function to simulate typing into an input field managed by React
