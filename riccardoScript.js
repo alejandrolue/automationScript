@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name        riccardo
-// @namespace   riccardo
+// @name        ricardo
+// @namespace   ricardo
 // @match       https://www.ricardo.ch/de/list/
 // @grant       none
 // @version     1.0
@@ -12,55 +12,101 @@
 // @description 26/02/2024, 20:21:07
 // ==/UserScript==
 
-document.getElementById("Title").value
+$(document).ready(function () {
+    waitForElm(".card--2wTIL").then((elm) => {
+        const state = localStorage.getItem('storedData');
+        let data = [];
+        if (state) {
+            data = [...JSON.parse(state)];
+            console.log(localStorage.getItem('storedData'));
+        } else {
+            console.log("empty")
+        }
+        // Get a reference to the parent element
+        const parentDiv1 = document.querySelector('.jss11');
 
-const divElement = document.querySelector('.ql-editor');
+        // Create a new dropdown element
+        const dropdown = document.createElement('select');
 
-// Get the text content of the div element
-const textContent = divElement.textContent.trim();
+        // Create and append option elements to the dropdown
+        data.forEach(option => {
+            console.log(option)
+            const optionElement = document.createElement('option');
+            optionElement.value = option[3];
+            optionElement.textContent = option[3];
+            dropdown.appendChild(optionElement);
+        });
 
-console.log(textContent);
+        // Insert the dropdown after the parent div
+        parentDiv1.insertAdjacentElement('afterend', dropdown);
 
-// Get all radio buttons within the div
-const radioButtons = document.querySelectorAll('input[type="radio"][name="pick-product type"]');
 
-// Initialize a variable to store the selected value
-let selectedValue = '';
+        // Get a reference to the parent element
+        const parentDiv = document.querySelector('.card--2wTIL');
 
-// Loop through each radio button
-radioButtons.forEach(radioButton => {
-    // Check if the radio button is checked
-    if (radioButton.checked) {
-        // If checked, update the selectedValue variable with its value
-        selectedValue = radioButton.value;
-    }
-});
+        // Define the HTML content for the button
+        const buttonHTML = '<button id="myButtonClass">Click me</button>';
 
-// Log the selected value
-console.log(selectedValue);
+        const inputHTML = '<input type="text" id="dropdownValue" placeholder="category name"/>'
 
-// Create a new select element
-const selectElement = document.createElement('select');
-selectElement.classList.add('custom-dropdown');
+        // Insert the button HTML after the parent div
+        parentDiv.insertAdjacentHTML('afterend', buttonHTML);
+        parentDiv.insertAdjacentHTML('afterend', inputHTML);
 
-// Define the options for the dropdown
-const options = [
-    { text: 'Option 1', value: 'option1' },
-    { text: 'Option 2', value: 'option2' },
-    { text: 'Option 3', value: 'option3' }
-];
 
-// Create and append options to the select element
-options.forEach(option => {
-    const optionElement = document.createElement('option');
-    optionElement.textContent = option.text;
-    optionElement.value = option.value;
-    selectElement.appendChild(optionElement);
-});
+        document.getElementById("myButtonClass").onclick = function () {
+            // Get the title value
+            const titleValue = document.getElementById("Title").value
+            console.log(titleValue)
 
-// Find the div element after which you want to insert the dropdown
-const divElement = document.querySelector('.MuiGrid-root.MuiGrid-container.css-1b1jvye');
+            const divElement1 = document.querySelector('.ql-editor');
 
-// Insert the select element after the div element
-divElement.parentNode.insertBefore(selectElement, divElement.nextSibling);
-<select class=​"custom-dropdown">​…​</select>​
+            // Get the text content of the div element
+            const textContent = divElement1.textContent.trim();
+
+            console.log(textContent);
+
+            // Get all radio buttons within the div
+            const radioButtons = document.querySelectorAll('input[type="radio"][name="pick-product type"]');
+
+            // Initialize a variable to store the selected value
+            let selectedValue = '';
+
+            // Loop through each radio button
+            radioButtons.forEach(radioButton => {
+                // Check if the radio button is checked
+                if (radioButton.checked) {
+                    // If checked, update the selectedValue variable with its value
+                    selectedValue = radioButton.value;
+                }
+            });
+
+            const categoryName = document.getElementById("dropdownValue").value
+
+            data.push([titleValue, textContent, selectedValue, categoryName])
+            localStorage.setItem('storedData', JSON.stringify(data));
+            console.log(data)
+            // Log the selected value
+            console.log(selectedValue);
+        }
+    })
+})
+
+function waitForElm(selector) {
+    return new Promise(resolve => {
+        if (document.querySelector(selector)) {
+            return resolve(document.querySelector(selector));
+        }
+
+        const observer = new MutationObserver(mutations => {
+            if (document.querySelector(selector)) {
+                resolve(document.querySelector(selector));
+                observer.disconnect();
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true, subtree: true
+        });
+    });
+}
