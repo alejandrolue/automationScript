@@ -58,7 +58,7 @@ $(document).ready(function () {
         const parentDiv = document.querySelector('.card--2wTIL');
 
         // Define the HTML content for the button
-        const buttonHTML = '<button id="myButtonClass">Click me</button>';
+        const buttonHTML = '<button id="myButtonClass">Save</button>';
 
         const inputHTML = '<input type="text" id="dropdownValue" placeholder="category name"/>'
 
